@@ -2,6 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
+	"time"
+	"traininglog/db"
 
 	"github.com/spf13/cobra"
 )
@@ -9,15 +12,19 @@ import (
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Adds a lift to your log.",
+	Long: `Adds a lift to your log. Example:
+	Liftname: weight * reps * sets
+	Squat: 200 x 5 x 5`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("add called")
+		date := time.Now().Local().String()
+		args = append(args, date)
+		lift := strings.Join(args, " ")
+		_, err := db.CreateLift(lift)
+		if err != nil {
+			fmt.Println("Something went wrong:", err)
+		}
+		fmt.Printf("Added \"%s\" to your list.\n", lift)
 	},
 }
 
